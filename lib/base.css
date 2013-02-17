@@ -1,0 +1,31 @@
+
+body { 
+	
+	background-color: #F0F0F0; 
+	padding-top: 25px;
+	padding-bottom: 25px;
+}
+
+.main-div {
+	padding: 0px 0px 0px;
+	margin: 0 auto 20px;
+	background-color: #ffffff;
+	border: 1px solid #e5e5e5;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+    border-radius: 0px;
+    -webkit-box-shadow: 0 2px 5px rgba(0,0,0,.05);
+    -moz-box-shadow: 0 2px 5px rgba(0,0,0,.05);
+    box-shadow: 0 2px 5px rgba(0,0,0,.05);
+  }
+  
+.main-div .main-div-heading,
+.main-div .checkbox {
+	margin-bottom: 10px;
+}
+
+.main-div input[type="text"],
+.main-div input[type="password"] {
+	font-size: 16px; height: auto;
+	margin-bottom: 15px; padding: 7px 9px;
+}
