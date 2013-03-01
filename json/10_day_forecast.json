@@ -1,0 +1,12 @@
+[
+	{"date":"2/28", "low_temp": 33, "hi_temp":47, "chance_of_rain":10},
+	{"date":"3/1", "low_temp": 30, "hi_temp":47, "chance_of_rain":0},
+	{"date":"3/2", "low_temp": 30, "hi_temp":45, "chance_of_rain":0},
+	{"date":"3/3", "low_temp": 28, "hi_temp":44, "chance_of_rain":10},
+	{"date":"3/4", "low_temp": 29, "hi_temp":43, "chance_of_rain":0},
+	{"date":"3/5", "low_temp": 35, "hi_temp":47, "chance_of_rain":10},
+	{"date":"3/6", "low_temp": 36, "hi_temp":36, "chance_of_rain":50},
+	{"date":"3/7", "low_temp": 35, "hi_temp":50, "chance_of_rain":30},
+	{"date":"3/8", "low_temp": 37, "hi_temp":54, "chance_of_rain":0},
+	{"date":"3/9", "low_temp": 43, "hi_temp":61, "chance_of_rain":0}
+]

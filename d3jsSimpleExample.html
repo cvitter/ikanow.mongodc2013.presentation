@@ -1,0 +1,172 @@
+<!--
+Copyright 2012 The Infinit.e Open Source Project
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Simple D3.js Example</title>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<script type="text/javascript" src="lib/d3.v3.js"></script>
+    <link href="lib/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="lib/base.css" rel="stylesheet">
+    <link href="lib/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+    
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <script type="text/javascript" src="lib/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="lib/bootstrap/js/jquery-latest.js"></script>
+    
+    <style>
+    	.chart rect {
+			stroke: white;
+			fill: steelblue;
+		}
+		.chart text.bar {
+ 			 fill: black;
+		}
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+	<div class="main-div">
+	<table width="100%" cellspacing="0" cellpadding="8" >
+	<tr bgcolor="#000000">
+		<td><img src="image/mongodc-site-header.png"></td>
+	</tr>
+	<tr>
+		<td align="center">
+			<table cellspacing="2" cellpadding="3" width="100%">
+				<tr style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
+					<td bgcolor="#FFFFDB" width="50%"><h4>Simple D3.js Example - 10 Day Chance of Rain</h4></td>
+				</tr>
+				<tr>
+					<td>
+						<table width="100%" cellspacing="1" cellpadding="3">
+							<tr valign="top">
+								<td width="100%" colspan="2">
+									<div id="d3_canvas" style="height:450px; width:870px; border:1px solid;"></div>
+								</td>
+							</tr>
+							<tr>
+								<td width="15%">&nbsp;</td>
+								<td width="85%"></td>
+							</tr>
+						</table>
+					</td>
+				</tr>			
+			</table>
+		</td>
+	</tr>
+	</table>
+	</div>
+</div>
+</body>
+</html>
+
+<!---------- JQuery Code ---------->
+<script>
+	$(document).ready(function () { runQuery(); });
+
+	// runQuery - 
+	function runQuery()
+	{
+		var queryUrl = "http://127.0.0.1/ikanow.mongodc2013.presentation/json/10_day_forecast.json";
+		$.ajax({
+			type: 'GET',
+			url: queryUrl,
+			async: true,
+			contentType: "application/json",
+			dataType: 'json',
+			success: function(msg) {
+				if (msg != null) {
+					createChart(msg);
+				}				
+			}
+		});
+	}
+	
+
+	// createChart
+	function createChart(inputData) {
+		var chartHeight = 450;
+		var chartWidth = 870;
+		
+		// Select the d3_canvas div
+		var chart = d3.select("#d3_canvas").append("svg")
+	    	.attr("class", "chart")
+	    	.attr("width", chartWidth)
+			.attr("height", chartHeight)
+			.append("g")
+			.attr("transform", "translate(35,20)");
+		
+		var lineHeight = (chartHeight - (6 * inputData.length) - 6) / inputData.length;
+		
+		// Draw the graph's bars
+		chart.selectAll("rect")
+			.data(inputData)
+			.enter().append("rect")
+			.attr("y", function(d, i) { return i * (lineHeight + 3); })
+			.attr("width", function(d, i) { return chartWidth * (d.chance_of_rain * 0.01); })
+			.attr("height", function(d) { return lineHeight; });
+		
+		// Calculate how to scale across the X axis
+		var x = d3.scale.linear()
+			.domain([0, 100])
+			.range([0, chartWidth]);
+		
+		// Label each value with its date
+ 		chart.selectAll("text")
+			.data(inputData)
+			.enter().append("text")
+			.attr("x", 0)
+			.attr("y", function(d, i) { return i * (lineHeight + 3) + (lineHeight / 2); })
+			.attr("dx", -3) // padding-right
+			.attr("dy", ".35em") // vertical-align: middle
+			.attr("text-anchor", "end") // text-align: right
+			.text(function(d) { return d.date; });
+		
+		// Draw the rules 
+		chart.selectAll("line")
+			.data(x.ticks(10))
+			.enter().append("line")
+			.attr("x1", x)
+			.attr("x2", x)
+			.attr("y1", 0)
+			.attr("y2", chartHeight)
+			.style("stroke", "#ccc");
+		
+		// Label the rules
+		chart.selectAll(".rule")
+			.data(x.ticks(10))
+			.enter().append("text")
+			.attr("class", "rule")
+			.attr("x", x)
+			.attr("y", 0)
+			.attr("dy", -3)
+			.attr("text-anchor", "middle")
+			.text(String);
+
+	}
+</script>

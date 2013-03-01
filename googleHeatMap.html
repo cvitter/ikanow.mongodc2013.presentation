@@ -18,7 +18,7 @@ limitations under the License.
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>Simple Google Maps Example</title>
+	<title>Google Maps Heat Map Example</title>
 	
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -49,7 +49,7 @@ limitations under the License.
 		<td align="center">
 			<table cellspacing="2" cellpadding="3" width="100%">
 				<tr style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
-					<td bgcolor="#FFFFDB" width="50%"><h4>Simple Google Maps JavaScript API Example</h4></td>
+					<td bgcolor="#FFFFDB" width="50%"><h4>Google Maps Heat Map Example</h4></td>
 				</tr>
 				<tr>
 					<td>
@@ -83,7 +83,7 @@ limitations under the License.
 	// runQuery - 
 	function runQuery()
 	{
-		var queryUrl = "http://127.0.0.1/ikanow.mongodc2013.presentation/json/USDC_25_Records.json";
+		var queryUrl = "http://127.0.0.1/ikanow.mongodc2013.presentation/json/USVA_1000_Records.json";
 		
 		if (queryUrl.length > 0) {
 			$.ajax({
@@ -108,32 +108,32 @@ limitations under the License.
     	var script = document.createElement("script");
     	script.setAttribute('id', 'googleScript');
     	script.type = "text/javascript";
-    	script.src = "https://maps.googleapis.com/maps/api/js?key=" + googleApiKey + "&sensor=false&callback=initializeMap";
+    	script.src = "https://maps.googleapis.com/maps/api/js?key=" + googleApiKey + 
+    			"&libraries=visualization&sensor=false&callback=initializeMap";
     	document.body.appendChild(script);
 	}
 	
 	// initializeMap -
 	function initializeMap() {
     	var mapOptions = {
-        	zoom: 11,
-       		center: new google.maps.LatLng( 38.8964, -77.0262 ),
-        	mapTypeId: google.maps.MapTypeId.ROADMAP
+        	zoom: 7	,
+       		center: new google.maps.LatLng( 38.1, -79.26 ),
+        	mapTypeId: google.maps.MapTypeId.HYBRID
       	};
       	map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
-
+      	
+      	var heatMapData = new Array();
 		for (var i=0; i < locations.length; i++) {
-			if (locations[i].latitude != null) {
-				var marker = new google.maps.Marker({
-					map: map,	
-					position: new google.maps.LatLng( locations[i].latitude , locations[i].longitude ),
-				    title: convertToTitleCase(locations[i].search_field)
-				});
-			}
+			var newRecord = {location: new google.maps.LatLng(locations[i].geoindex.lat , locations[i].geoindex.lon), weight: 1};
+			heatMapData.push(newRecord);
 		}
+		
+		var heatmap = new google.maps.visualization.HeatmapLayer({
+			  data: heatMapData,
+			  dissipating: true,
+			  radius: 15,
+			  map: map
+		});
     }
 	
-	// convertToTitleCase -
-	function convertToTitleCase(str) {
-		return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
-	}
 </script>
