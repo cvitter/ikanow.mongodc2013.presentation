@@ -14,14 +14,6 @@ projects:
 - JQuery: http://jquery.com/
 - D3.js: http://d3js.org/
 
-If you'd like to run the code locally you will need to have an instance of
-MongoDB and perform the following steps:
-
-1. Start MongoDB using the --rest option (e.g. "mongod --rest");
-2. Unzip the MongoDB dump files in the mongodc.zip file;
-3. Restore the dump files to your MongoDB server using mongorestore:
-	mongorestore --db mongodc <pathtodumpfiles>/mongodc
-
 Note: In order to run the Google Maps JavaScript API examples you will need to
 acquire an API Key from Google. Instructions for obtaining a key can be
 found at the following URL: 
