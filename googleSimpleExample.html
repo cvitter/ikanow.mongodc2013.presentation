@@ -75,12 +75,12 @@ limitations under the License.
 </body>
 </html>
 
-<!---------- JQuery Code ---------->
+<!---------- JavaScript/JQuery Code ---------->
 <script>
 	var locations = null;
-	$(document).ready(function () { runQuery(); });
 
 	// runQuery - 
+	$(document).ready(function () { runQuery(); });
 	function runQuery()
 	{
 		var queryUrl = "http://127.0.0.1/ikanow.mongodc2013.presentation/json/USDC_25_Records.json";
@@ -103,6 +103,8 @@ limitations under the License.
 	}
 	
 	// loadMap -
+	// Create Google Map script element and append the script to the page
+	// Update the API Key Value in settings.js or put your key in the .src value below
     function loadMap() {
     	$('.googleScript').remove();
     	var script = document.createElement("script");
@@ -114,6 +116,8 @@ limitations under the License.
 	
 	// initializeMap -
 	function initializeMap() {
+		// Create the Map object and set the type, zoom level, and 
+		// location to center the map on by latitude and longitude
     	var mapOptions = {
         	zoom: 11,
        		center: new google.maps.LatLng( 38.8964, -77.0262 ),
@@ -121,6 +125,8 @@ limitations under the License.
       	};
       	map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
 
+      	// Iterate over our dataset and add a google.maps.Marker to the map for each
+      	// location (latitude, longitude, and title)
 		for (var i=0; i < locations.length; i++) {
 			if (locations[i].latitude != null) {
 				var marker = new google.maps.Marker({
@@ -132,7 +138,8 @@ limitations under the License.
 		}
     }
 	
-	// convertToTitleCase -
+	// convertToTitleCase - simple code to turn string of words into title case
+	// or first letter of each word capitalized
 	function convertToTitleCase(str) {
 		return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 	}

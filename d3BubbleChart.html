@@ -18,7 +18,7 @@ limitations under the License.
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>Simple D3.js Example</title>
+	<title>D3.js Bubble Chart</title>
 	
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,12 +37,8 @@ limitations under the License.
     <script type="text/javascript" src="lib/bootstrap/js/jquery-latest.js"></script>
     
     <style>
-    	.chart rect {
-			stroke: white;
-			fill: steelblue;
-		}
-		.chart text.bar {
- 			 fill: black;
+    	text {
+  			font: 10px sans-serif;
 		}
     </style>
 
@@ -59,7 +55,7 @@ limitations under the License.
 		<td align="center">
 			<table cellspacing="2" cellpadding="3" width="100%">
 				<tr style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
-					<td bgcolor="#FFFFDB" width="50%"><h4>Simple D3.js Example - 10 Day Chance of Rain</h4></td>
+					<td bgcolor="#FFFFDB" width="50%"><h4>D3.js Bubble Chart</h4></td>
 				</tr>
 				<tr>
 					<td>
@@ -71,8 +67,8 @@ limitations under the License.
 							</tr>
 							<tr>
 								<td width="100%" colspan="2">
-									<strong>Note</strong>: See <a href="http://mbostock.github.com/d3/tutorial/bar-1.html">A Bar Chart, Part 1</a> 
-									for more information and examples of basic bar charts with D3.js.
+									<strong>Note</strong>: See <a href="http://bl.ocks.org/mbostock/4063269">Bubble Chart</a> 
+									for the original example this example is based on.
 								</td>
 							</tr>
 						</table>
@@ -89,12 +85,12 @@ limitations under the License.
 
 <!---------- JavaScript/JQuery Code ---------->
 <script>
-	
-	// runQuery -
 	$(document).ready(function () { runQuery(); });
+
+	// runQuery - 
 	function runQuery()
 	{
-		var queryUrl = "http://127.0.0.1/ikanow.mongodc2013.presentation/json/10_day_forecast.json";
+		var queryUrl = "http://127.0.0.1/ikanow.mongodc2013.presentation/json/bubble_chart_data.json";
 		$.ajax({
 			type: 'GET',
 			url: queryUrl,
@@ -108,69 +104,65 @@ limitations under the License.
 			}
 		});
 	}
-
+	
 	// createChart -
-	// Create simple bar chart using D3.js
-	// Starter code borrowed from http://mbostock.github.com/d3/tutorial/bar-1.html
-	function createChart(inputData) {
-		// Set height and width of chart to match our #d3_canvas div
-		var chartHeight = 450;
-		var chartWidth = 870;
+	// Create simple bubble chart using D3.js
+	// Starter code borrowed from http://bl.ocks.org/mbostock/4063269
+	function createChart(data) {
+		// Set up chart size information, number formatting, and color scale
+		var diameter = 870,
+		width = 870,
+		height = 450,
+	    format = d3.format(",d"), // https://github.com/mbostock/d3/wiki/Formatting
+	    color = d3.scale.category20c(); // https://github.com/mbostock/d3/wiki/Ordinal-Scales#wiki-category20c
+
+		// Set layout mode for nodes - see https://github.com/mbostock/d3/wiki/Pack-Layout for 
+		// more info on options and usage
+		var bubble = d3.layout.pack()
+		    .sort(null)
+		    .size([width, height])
+		    .padding(1);
 		
-		// Select the d3_canvas div and append our SVG to it
-		var chart = d3.select("#d3_canvas").append("svg")
-	    	.attr("class", "chart")
-	    	.attr("width", chartWidth)
-			.attr("height", chartHeight)
-			.append("g")
-			.attr("transform", "translate(35,20)");
+		// Select our #d3_canvas div and append the SVG graphic to it
+		var svg = d3.select("#d3_canvas").append("svg")
+	    	.attr("width", width)
+	    	.attr("height", height)
+	    	.attr("class", "bubble");
+	
+		// Create nodes based on the data passed into the createChart function
+	  	var node = svg.selectAll(".node")
+	    	.data(bubble.nodes(classes(data))
+	    	.filter(function(d) { return !d.children; }))
+	   	 	.enter().append("g")
+	    	.attr("class", "node")
+	    	.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+	
+		node.append("title")
+			.text(function(d) { return d.className + ": " + format(d.value); });
 		
-		// Calculate the hight of each bar in our bar chart
-		var barHeight = (chartHeight - (6 * inputData.length) - 6) / inputData.length;
+		node.append("circle")
+			.attr("r", function(d) { return d.r; })
+		    .style("fill", function(d) { return color(d.packageName); });
 		
-		// Draw the graph's bars
-		chart.selectAll("rect")
-			.data(inputData)
-			.enter().append("rect")
-			.attr("y", function(d, i) { return i * (barHeight + 3); })
-			.attr("width", function(d, i) { return chartWidth * (d.chance_of_rain * 0.01); })
-			.attr("height", function(d) { return barHeight; });
+		node.append("text")
+			.attr("dy", ".3em")
+		    .style("text-anchor", "middle")
+		    .text(function(d) { return d.className.substring(0, d.r / 3); });
+
+		// Returns a flattened hierarchy containing all leaf nodes under the root.
+		function classes(root) {
+			var classes = [];
 		
-		// Calculate how to scale across the X axis
-		var x = d3.scale.linear()
-			.domain([0, 100])
-			.range([0, chartWidth]);
+			function recurse(name, node) {
+		    	if (node.children) node.children.forEach(function(child) { recurse(node.name, child); });
+		    	else classes.push({packageName: name, className: node.name, value: node.size});
+			}
 		
-		// Label each value with its date
- 		chart.selectAll("text")
-			.data(inputData)
-			.enter().append("text")
-			.attr("x", 0)
-			.attr("y", function(d, i) { return i * (barHeight + 3) + (barHeight / 2); })
-			.attr("dx", -3)
-			.attr("dy", ".35em")
-			.attr("text-anchor", "end")
-			.text(function(d) { return d.date; });
+			recurse(null, root);
+			return {children: classes};
+		}
 		
-		// Draw the rules 
-		chart.selectAll("line")
-			.data(x.ticks(10))
-			.enter().append("line")
-			.attr("x1", x)
-			.attr("x2", x)
-			.attr("y1", 0)
-			.attr("y2", chartHeight)
-			.style("stroke", "#ccc");
-		
-		// Label the rules
-		chart.selectAll(".rule")
-			.data(x.ticks(10))
-			.enter().append("text")
-			.attr("class", "rule")
-			.attr("x", x)
-			.attr("y", 0)
-			.attr("dy", -3)
-			.attr("text-anchor", "middle")
-			.text(String);
+		d3.select(self.frameElement).style("height", diameter + "px");		
 	}
+
 </script>

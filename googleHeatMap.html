@@ -75,7 +75,7 @@ limitations under the License.
 </body>
 </html>
 
-<!---------- JQuery Code ---------->
+<!---------- JavaScript/JQuery Code ---------->
 <script>
 	var locations = null;
 	$(document).ready(function () { runQuery(); });
@@ -103,6 +103,8 @@ limitations under the License.
 	}
 	
 	// loadMap -
+	// Create Google Map script element and append the script to the page
+	// Update the API Key Value in settings.js or put your key in the .src value below
     function loadMap() {
     	$('.googleScript').remove();
     	var script = document.createElement("script");
@@ -115,6 +117,8 @@ limitations under the License.
 	
 	// initializeMap -
 	function initializeMap() {
+		// Create the Map object and set the type, zoom level, and 
+		// location to center the map on by latitude and longitude
     	var mapOptions = {
         	zoom: 7	,
        		center: new google.maps.LatLng( 38.1, -79.26 ),
@@ -122,12 +126,14 @@ limitations under the License.
       	};
       	map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
       	
+      	// Create heatMapData array of objects with {loctaion: google.maps.LatLng, weight: x}
       	var heatMapData = new Array();
 		for (var i=0; i < locations.length; i++) {
 			var newRecord = {location: new google.maps.LatLng(locations[i].geoindex.lat , locations[i].geoindex.lon), weight: 1};
 			heatMapData.push(newRecord);
 		}
 		
+		// Create the heatmap layer using the heatMapData set
 		var heatmap = new google.maps.visualization.HeatmapLayer({
 			  data: heatMapData,
 			  dissipating: true,
